@@ -12,7 +12,7 @@ use pocketmine\Server;
 use pocketmine\utils\Config;
 
 use itzdapakrep\floatingtext\EventListener;
-use itzdapakrep\floatingtext\TaskScheduler;
+use itzdapakrep\floatingtext\FloatingTextTask;
 use itzdapakrep\floatingtext\commands\FloatingTextCommands;
 
 class FloatingText extends PluginBase {
