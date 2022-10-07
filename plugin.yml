@@ -1,0 +1,9 @@
+---
+name: FloatingText
+version: 1.0.0
+main: itzdapakrep\floatingtext\FloatingText
+api: 3.0.0
+author: ItzDapaKrep
+depend:
+- Slapper
+...
