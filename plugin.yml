@@ -1,9 +1,10 @@
 ---
-name: FloatingText
+name: VanillaMinecarts
 version: 1.0.0
-main: itzdapakrep\floatingtext\FloatingText
-api: 3.0.0
-author: ItzDapaKrep
-depend:
-- Slapper
+main: pixelwhiz\vanillaminecarts\VanillaMinecarts
+api: 5.0.0
+author: pixelwhiz
+website: https://github.com/pixelwhiz/VanillaMinecarts
+src-namespace-prefix: pixelwhiz\vanillaminecarts
+
 ...
