@@ -37,7 +37,9 @@ class MinecartEntity extends Living {
 
     public bool $isMoving = false;
 
-    private array $moveVector = [];
+    private Vector3 $moveVector;
+    private float $direction = 0;
+    private float $moveSpeed = 0.4;
 
     public function getName(): string
     {
@@ -46,6 +48,12 @@ class MinecartEntity extends Living {
 
     protected function initEntity(CompoundTag $nbt): void
     {
+
+        $this->moveVector[self::NORTH] = new Vector3(0, 0, 1);
+        $this->moveVector[self::EAST] = new Vector3(-1, 0, 0);
+        $this->moveVector[self::SOUTH] = new Vector3(0, 0, -1);
+        $this->moveVector[self::WEST] = new Vector3(1, 0, 0);
+
         parent::initEntity($nbt);
     }
 
@@ -57,9 +65,20 @@ class MinecartEntity extends Living {
         return null;
     }
 
-    protected function entityBaseTick(int $tickDiff = 20): bool
+    public function onUpdate(int $currentTick): bool
     {
-        return parent::entityBaseTick($tickDiff);
+        if ($this->getRider() !== null) {
+            $this->forwardOnRail($this->getRider());
+        }
+
+        return parent::onUpdate($currentTick);
+    }
+
+    public function forwardOnRail(Player $player): void {
+        $rail = $this->getCurrentRail();
+        if ($rail !== null) {
+
+        }
     }
 
     protected function getInitialSizeInfo(): EntitySizeInfo
@@ -226,6 +245,26 @@ class MinecartEntity extends Living {
                     break;
             }
         }
+    }
+
+    private function moveIfRail(){
+        $nextMoveVector = $this->moveVector[$this->direction];
+        $nextMoveVector = $nextMoveVector->multiply($this->moveSpeed);
+        $newVector = $this->getDirectionVector()->add($nextMoveVector->x, $nextMoveVector->y, $nextMoveVector->z);
+        $possibleRail = $this->getCurrentRail();
+        if($possibleRail){
+            $this->moveUsingVector($newVector);
+            return true;
+        }
+
+        return false;
+    }
+
+    private function moveUsingVector(Vector3 $desiredPosition){
+        $dx = $desiredPosition->x - $this->getLocation()->x;
+        $dy = $desiredPosition->y - $this->getLocation()->y;
+        $dz = $desiredPosition->z - $this->getLocation()->z;
+        $this->move($dx, $dy, $dz);
     }
 
     public function getSpeed(): float {
