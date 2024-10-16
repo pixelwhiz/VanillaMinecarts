@@ -143,6 +143,7 @@ class MinecartEntity extends Living {
                 break;
 
         }
+
     }
 
     protected function getInitialSizeInfo(): EntitySizeInfo
@@ -218,13 +219,13 @@ class MinecartEntity extends Living {
         if ($player instanceof Player) {
             $yaw = $player->getLocation()->getYaw();
             if (($yaw >= -45 && $yaw < 45) || ($yaw >= 315 && $yaw < 360) || ($yaw >= -360 && $yaw < -315)) {
-                $direction = self::NORTH;
-            } elseif ($yaw >= 45 && $yaw < 135) {
-                $direction = self::EAST;
-            } elseif ($yaw >= 135 && $yaw < 225) {
                 $direction = self::SOUTH;
-            } elseif ($yaw >= 225 && $yaw < 315) {
+            } elseif ($yaw >= 45 && $yaw < 135) {
                 $direction = self::WEST;
+            } elseif ($yaw >= 135 && $yaw < 225) {
+                $direction = self::NORTH;
+            } elseif ($yaw >= 225 && $yaw < 315) {
+                $direction = self::EAST;
             }
         }
         return $direction;
@@ -261,50 +262,62 @@ class MinecartEntity extends Living {
             $direction = $player->getDirectionVector();
             switch ($this->getPlayerDirection()) {
                 case self::NORTH:
-                    if ($world->getBlock($pos->add(0, 0, 1.0)) instanceof Rail) {
-                        $this->move(0, 0, 0.5);
-                    }
-
-                    if ($world->getBlock($pos->add(0, 1, 1.0)) instanceof Rail) {
-                        $this->move(0, 1, 0.5);
-                    }
-
-                    if ($world->getBlock($pos->add(0, -1, 1.0)) instanceof Rail) {
-                        $this->move(0, -1, 0.5);
-                    }
-
-                    break;
-                case self::SOUTH:
-                    if ($world->getBlock($pos->subtract(0, 0, 1.0)) instanceof Rail) {
+                    if ($world->getBlock($pos->add(0, 0, -1.0)) instanceof Rail) {
                         $this->move(0, 0, -0.5);
                     }
 
                     // TODO: Vertical movement
-                    if ($world->getBlock($pos->subtract(0, 0, 1.0)->add(0, 1, 0)) instanceof Rail) {
+                    if ($world->getBlock($pos->add(0, 1, -1.0)) instanceof Rail) {
                         $this->move(0, 1, -0.5);
                     }
 
-                    if ($world->getBlock($pos->subtract(0, 1, 1.0)) instanceof Rail) {
+                    if ($world->getBlock($pos->add(0, -1, -1.0)) instanceof Rail || $world->getBlock($pos->add(0, -1, 0)) instanceof Rail) {
                         $this->move(0, -1, -0.5);
                     }
 
                     break;
-                case self::EAST:
-                    if ($world->getBlock($pos->subtract(1.0, 0, 0)) instanceof Rail) {
-                        $this->move(-0.5, 0, 0);
+                case self::SOUTH:
+                    if ($world->getBlock($pos->add(0, 0, 1.0)) instanceof Rail) {
+                        $this->move(0, 0, 0.5);
                     }
+
+                    // TODO: Vertical movement
+                    if ($world->getBlock($pos->add(0, 1, 1.0)) instanceof Rail) {
+                        $this->move(0, 1, 0.5);
+                    }
+
+                    if ($world->getBlock($pos->add(0, -1, 1.0)) instanceof Rail || $world->getBlock($pos->add(0, -1, 0)) instanceof Rail) {
+                        $this->move(0, -1, 0.5);
+                    }
+
                     break;
-                case self::WEST:
+                case self::EAST:
                     if ($world->getBlock($pos->add(1.0, 0, 0)) instanceof Rail) {
                         $this->move(0.5, 0, 0);
                     }
 
-                    if ($world->getBlock($pos->add(1.0, 1.0, 0)) instanceof Rail) {
-                        $this->move(0.5, 0.5, 0);
+                    
+                    // TODO: Vertical movement
+                    if ($world->getBlock($pos->add(1.0, 1, 0)) instanceof Rail) {
+                        $this->move(0.5, 1, 0);
                     }
 
-                    if ($world->getBlock($pos->add(1.0, -1, 0)) instanceof Rail) {
-                        $this->move(0.5, -0.5, 0);
+                    if ($world->getBlock($pos->add(1.0, -1, 0)) instanceof Rail || $world->getBlock($pos->add(0, -1, 0)) instanceof Rail) {
+                        $this->move(0.5, -1, 0);
+                    }
+                    break;
+                case self::WEST:
+                    if ($world->getBlock($pos->add(-1.0, 0, 0)) instanceof Rail) {
+                        $this->move(-0.5, 0, 0);
+                    }
+
+                    // TODO: Vertical movement
+                    if ($world->getBlock($pos->add(-1.0, 1, 0)) instanceof Rail) {
+                        $this->move(-0.5, 1, 0);
+                    }
+
+                    if ($world->getBlock($pos->add(-1.0, -1, 0)) instanceof Rail || $world->getBlock($pos->add(0, -1, 0)) instanceof Rail) {
+                        $this->move(-0.5, -1, 0);
                     }
                     break;
             }

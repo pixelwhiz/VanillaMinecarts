@@ -21,6 +21,7 @@ namespace pixelwhiz\vanillaminecarts\block\types;
  *
  */
 
+
 class RailShapeTypes {
 
     public const STRAIGHT_NORTH_SOUTH = 0;

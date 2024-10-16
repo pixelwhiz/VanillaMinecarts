@@ -2,6 +2,7 @@
 
 namespace pixelwhiz\vanillaminecarts;
 
+use pixelwhiz\vanillaminecarts\block\types\RailShapeTypes;
 use pocketmine\block\Rail;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Location;
