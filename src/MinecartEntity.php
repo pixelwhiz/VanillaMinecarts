@@ -2,16 +2,20 @@
 
 namespace pixelwhiz\vanillaminecarts;
 
+use pocketmine\block\Air;
 use pocketmine\block\Block;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\block\Rail;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Living;
+use pocketmine\entity\Location;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\NetworkBroadcastUtils;
 use pocketmine\network\mcpe\protocol\SetActorLinkPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
@@ -25,17 +29,24 @@ use pocketmine\player\Player;
 class MinecartEntity extends Living {
 
     public const NORTH = 0;
-    public const SOUTH = 1;
-    public const EAST = 2;
+    public const EAST = 1;
+    public const SOUTH = 2;
     public const WEST = 3;
     public const UNKNOWN = 4;
 
 
     public bool $isMoving = false;
 
+    private array $moveVector = [];
+
     public function getName(): string
     {
         return "Minecart";
+    }
+
+    protected function initEntity(CompoundTag $nbt): void
+    {
+        parent::initEntity($nbt);
     }
 
     public function getRider(): ?Player {
@@ -86,9 +97,9 @@ class MinecartEntity extends Living {
             if ($damager instanceof Player and $damager->getGamemode() === GameMode::SURVIVAL) {
                 $this->getWorld()->dropItem($this->getLocation()->asVector3(), $item);
             }
+            $this->flagForDespawn();
         }
-
-        $this->close();
+        $source->cancel();
     }
 
     public function onInteract(Player $player, Vector3 $clickPos): bool
@@ -97,7 +108,7 @@ class MinecartEntity extends Living {
         $this->setTargetEntity($player);
         $link = new SetActorLinkPacket();
         $link->link = new EntityLink($this->getId(), $player->getId(), EntityLink::TYPE_RIDER, true, true, 1.0);
-        $player->getNetworkProperties()->setVector3(EntityMetadataProperties::RIDER_SEAT_POSITION, new Vector3(0, 1.25, 0));
+        $player->getNetworkProperties()->setVector3(EntityMetadataProperties::RIDER_SEAT_POSITION, new Vector3(0, 1.25, 0.25));
         $player->getNetworkProperties()->setGenericFlag(EntityMetadataFlags::RIDING, true);
         $player->getNetworkProperties()->setGenericFlag(EntityMetadataFlags::SADDLED, true);
         $player->getNetworkProperties()->setGenericFlag(EntityMetadataFlags::WASD_CONTROLLED, true);
@@ -136,6 +147,29 @@ class MinecartEntity extends Living {
         return $direction;
     }
 
+    public function isRail(Block $rail): bool {
+        if (in_array($rail->getTypeId(), [BlockTypeIds::RAIL, BlockTypeIds::ACTIVATOR_RAIL, BlockTypeIds::POWERED_RAIL, BlockTypeIds::DETECTOR_RAIL])) {
+            return true;
+        }
+        return false;
+    }
+
+    public function getCurrentRail(): ?Block {
+        $pos = $this->getPosition()->floor();
+        $block = $this->getWorld()->getBlock($pos);
+        if ($this->isRail($block)) {
+            return $block;
+        }
+
+        $down = $this->getLocation()->subtract(0, 1, 0);
+        $block = $this->getWorld()->getBlock($down);
+        if ($this->isRail($block)) {
+            return $block;
+        }
+
+        return null;
+    }
+
     public function walk(): void {
         $player = $this->getRider();
         if ($player !== null) {
@@ -144,24 +178,50 @@ class MinecartEntity extends Living {
             $direction = $player->getDirectionVector();
             switch ($this->getPlayerDirection()) {
                 case self::NORTH:
-                    $block = $world->getBlock($pos->add(0, 0, 1.0));
-                    if ($block instanceof Rail) {
-                        $this->move(0, 0, $direction->getZ() + 0.1);
+                    if ($world->getBlock($pos->add(0, 0, 1.0)) instanceof Rail) {
+                        $this->move(0, 0, 0.5);
                     }
+
+                    if ($world->getBlock($pos->add(0, 1, 1.0)) instanceof Rail) {
+                        $this->move(0, 1, 0.5);
+                    }
+
+                    if ($world->getBlock($pos->add(0, -1, 1.0)) instanceof Rail) {
+                        $this->move(0, -1, 0.5);
+                    }
+
                     break;
                 case self::SOUTH:
                     if ($world->getBlock($pos->subtract(0, 0, 1.0)) instanceof Rail) {
-                        $this->move(0, 0, $direction->getZ() - 0.1);
+                        $this->move(0, 0, -0.5);
                     }
+
+                    // TODO: Vertical movement
+                    if ($world->getBlock($pos->subtract(0, 0, 1.0)->add(0, 1, 0)) instanceof Rail) {
+                        $this->move(0, 1, -0.5);
+                    }
+
+                    if ($world->getBlock($pos->subtract(0, 1, 1.0)) instanceof Rail) {
+                        $this->move(0, -1, -0.5);
+                    }
+
                     break;
                 case self::EAST:
                     if ($world->getBlock($pos->subtract(1.0, 0, 0)) instanceof Rail) {
-                        $this->move($direction->getX() - 0.1, 0, 0);
+                        $this->move(-0.5, 0, 0);
                     }
                     break;
                 case self::WEST:
                     if ($world->getBlock($pos->add(1.0, 0, 0)) instanceof Rail) {
-                        $this->move($direction->getX() + 0.1, 0, 0);
+                        $this->move(0.5, 0, 0);
+                    }
+
+                    if ($world->getBlock($pos->add(1.0, 1.0, 0)) instanceof Rail) {
+                        $this->move(0.5, 0.5, 0);
+                    }
+
+                    if ($world->getBlock($pos->add(1.0, -1, 0)) instanceof Rail) {
+                        $this->move(0.5, -0.5, 0);
                     }
                     break;
             }
