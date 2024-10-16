@@ -6,5 +6,12 @@ api: 5.0.0
 author: pixelwhiz
 website: https://github.com/pixelwhiz/VanillaMinecarts
 src-namespace-prefix: pixelwhiz\vanillaminecarts
-
+commands:
+  checkdir:
+    description: Check player face direction.
+    permission: ch.cmd
+permissions:
+  ch.cmd:
+    description: Allows players to use the /checkdir command
+    default: op
 ...

@@ -2,6 +2,7 @@
 
 namespace pixelwhiz\vanillaminecarts;
 
+use pixelwhiz\vanillaminecarts\block\types\RailShapeTypes;
 use pocketmine\block\Air;
 use pocketmine\block\Block;
 use pocketmine\block\BlockTypeIds;
@@ -28,18 +29,24 @@ use pocketmine\player\Player;
 
 class MinecartEntity extends Living {
 
-    public const NORTH = 0;
-    public const EAST = 1;
-    public const SOUTH = 2;
-    public const WEST = 3;
-    public const UNKNOWN = 4;
+    public const SOUTH = 0;
+    public const NORTH = 1;
+    public const WEST = 2;
+    public const EAST = 3;
+
+
+    public const STATE_INITIAL = 0;
+    public const STATE_ON_RAIL = 1;
+    public const STATE_OFF_RAIL = 2;
 
 
     public bool $isMoving = false;
 
     private Vector3 $moveVector;
-    private float $direction = 0;
+    private float $direction = -1;
     private float $moveSpeed = 0.4;
+
+    private int $state = self::STATE_INITIAL;
 
     public function getName(): string
     {
@@ -49,10 +56,10 @@ class MinecartEntity extends Living {
     protected function initEntity(CompoundTag $nbt): void
     {
 
-        $this->moveVector[self::NORTH] = new Vector3(0, 0, 1);
-        $this->moveVector[self::EAST] = new Vector3(-1, 0, 0);
-        $this->moveVector[self::SOUTH] = new Vector3(0, 0, -1);
-        $this->moveVector[self::WEST] = new Vector3(1, 0, 0);
+//        $this->moveVector[self::NORTH] = new Vector3(0, 0, 1);
+//        $this->moveVector[self::EAST] = new Vector3(-1, 0, 0);
+//        $this->moveVector[self::SOUTH] = new Vector3(0, 0, -1);
+//        $this->moveVector[self::WEST] = new Vector3(1, 0, 0);
 
         parent::initEntity($nbt);
     }
@@ -67,16 +74,73 @@ class MinecartEntity extends Living {
 
     public function onUpdate(int $currentTick): bool
     {
-        if ($this->getRider() !== null) {
-            $this->forwardOnRail($this->getRider());
+        if ($this->getRider() !== null and $this->isAlive()) {
+            switch ($this->state) {
+                case self::STATE_INITIAL:
+                    $this->checkIfOnRail();
+                    break;
+                case self::STATE_ON_RAIL:
+                    $this->forwardOnRail($this->getRider());
+                    $this->updateMovement();
+                    break;
+                case self::STATE_OFF_RAIL:
+                    break;
+            }
         }
 
         return parent::onUpdate($currentTick);
     }
 
+    private function checkIfOnRail(){
+        for($y = -1; $y !== 2 and $this->state === self::STATE_INITIAL; $y++){
+            $positionToCheck = $this->getLocation()->add(0, $y, 0);
+            $block = $this->getWorld()->getBlock($positionToCheck);
+            if($this->isRail($block)){
+                $minecartPosition = $positionToCheck->floor()->add(0.5, 0, 0.5);
+                $this->setPosition($minecartPosition);
+                $this->state = self::STATE_ON_RAIL;
+            }
+        }
+        if($this->state !== self::STATE_ON_RAIL){
+            $this->state = self::STATE_OFF_RAIL;
+        }
+    }
+
     public function forwardOnRail(Player $player): void {
+        if ($this->direction === -1) {
+            $this->direction = $this->getPlayerDirection();
+        }
+
         $rail = $this->getCurrentRail();
-        if ($rail !== null) {
+
+    }
+
+    public function getDirectionToMove(Rail $rail, Vector3 $direction): Vector3 {
+        switch ($rail->getShape()) {
+            case RailShapeTypes::STRAIGHT_NORTH_SOUTH:
+            case RailShapeTypes::SLOPED_ASCENDING_NORTH:
+            case RailShapeTypes::SLOPED_DESCENDING_SOUTH:
+                switch ($this->getDirectionVector()) {
+                    case self::NORTH:
+                    case self::SOUTH:
+                        return $direction;
+                        break;
+                }
+                break;
+
+            case RailShapeTypes::STRAIGHT_EAST_WEST:
+            case RailShapeTypes::SLOPED_ASCENDING_EAST:
+            case RailShapeTypes::SLOPED_DESCENDING_WEST:
+                switch ($this->getDirectionVector()) {
+                    case self::EAST:
+                    case self::WEST:
+                        return $direction;
+                        break;
+                }
+                break;
+
+            case RailShapeTypes::CURVED_SOUTH_EAST:
+                break;
 
         }
     }
@@ -149,7 +213,7 @@ class MinecartEntity extends Living {
     }
 
     public function getPlayerDirection(): int {
-        $direction = self::UNKNOWN;
+        $direction = -1;
         $player = $this->getRider();
         if ($player instanceof Player) {
             $yaw = $player->getLocation()->getYaw();

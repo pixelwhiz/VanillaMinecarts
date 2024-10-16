@@ -32,13 +32,13 @@ class VanillaMinecarts extends PluginBase {
                 if ($player instanceof Player) {
                     $yaw = $player->getLocation()->getYaw();
                     if (($yaw >= -45 && $yaw < 45) || ($yaw >= 315 && $yaw < 360) || ($yaw >= -360 && $yaw < -315)) {
-                        $direction = 0;
+                        $direction = "SOUTH";
                     } elseif ($yaw >= 45 && $yaw < 135) {
-                        $direction = 2;
+                        $direction = "WEST";
                     } elseif ($yaw >= 135 && $yaw < 225) {
-                        $direction = 1;
+                        $direction = "NORTH";
                     } elseif ($yaw >= 225 && $yaw < 315) {
-                        $direction = 3;
+                        $direction = "EAST";
                     }
                 }
                 $player->sendMessage("Direction: ". $direction);
