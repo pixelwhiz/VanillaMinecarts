@@ -20,9 +20,7 @@ class EventHandler implements Listener {
         $player = $event->getPlayer();
         $item = $event->getItem();
         $block = $event->getBlock();
-        if ($block instanceof Rail) {
-            $player->sendMessage("Rail: ". $block->getShape());
-        }
+
         if ($block instanceof Rail and $item instanceof Minecart) {
             $player->getInventory()->setItemInHand($item->setCount($item->getCount() - 1));
             $entity = new MinecartEntity(Location::fromObject($block->getPosition()->asVector3(), $block->getPosition()->getWorld()));

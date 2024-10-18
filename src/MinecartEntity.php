@@ -148,7 +148,7 @@ class MinecartEntity extends Living {
 
     protected function getInitialSizeInfo(): EntitySizeInfo
     {
-        return new EntitySizeInfo(0.7, 0.98);
+        return new EntitySizeInfo(0.7, 0.5);
     }
 
     protected function getInitialDragMultiplier(): float
