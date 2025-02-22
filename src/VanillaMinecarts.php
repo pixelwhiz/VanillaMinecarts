@@ -2,6 +2,9 @@
 
 namespace pixelwhiz\vanillaminecarts;
 
+use pixelwhiz\vanillaminecarts\blocks\BlockLoader;
+use pixelwhiz\vanillaminecarts\blocks\mechanism\BlockPoweredRail;
+use pixelwhiz\vanillaminecarts\blocks\power\BlockRedstoneTorch;
 use pixelwhiz\vanillaminecarts\entities\MinecartBase;
 use pixelwhiz\vanillaminecarts\items\MinecartChest;
 use pixelwhiz\vanillaminecarts\items\MinecartHopper;
@@ -14,6 +17,10 @@ use pixelwhiz\vanillaminecarts\entities\minecarts\MinecartTNT as MinecartTNTEnti
 
 use pixelwhiz\vanillaminecarts\handlers\EventHandler;
 
+use pocketmine\block\Block;
+use pocketmine\block\BlockIdentifier;
+use pocketmine\block\BlockTypeIds;
+use pocketmine\block\VanillaBlocks;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\data\bedrock\item\ItemTypeNames;
@@ -29,6 +36,7 @@ use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\Server;
 use pocketmine\utils\Config;
+use pocketmine\world\format\io\GlobalBlockStateHandlers;
 use pocketmine\world\format\io\GlobalItemDataHandlers;
 use pocketmine\world\World;
 
@@ -40,13 +48,25 @@ class VanillaMinecarts extends PluginBase {
 
     public static array $inMinecart = [];
 
+    public array $blockLoader = [];
+
     protected function onEnable(): void
     {
         self::$instance = $this;
         Server::getInstance()->getPluginManager()->registerEvents(new EventHandler(), $this);
-        $this->registerItems();
         $this->data = new Config($this->getDataFolder() . "data.json", Config::JSON);
         $this->registerEntities();
+        $this->registerItems();
+        $this->registerBlocks();
+    }
+
+    private function overrideBlock(string $name, Block $oldBlock, int $id, \Closure $callback, ?string $class = null): void {
+        $this->blockLoader[] = BlockLoader::createBlock($name, $oldBlock, $id, $callback, $class);
+    }
+
+    private function registerBlocks(): void {
+        $this->overrideBlock("rail", VanillaBlocks::POWERED_RAIL(), BlockTypeIds::POWERED_RAIL, fn($bid, $name, $info) =>  new BlockPoweredRail($bid, $name, $info));
+        $this->overrideBlock("redstone_torch", VanillaBlocks::REDSTONE_TORCH(), BlockTypeIds::REDSTONE_TORCH, fn($bid, $name, $info) =>  new BlockRedstoneTorch($bid, $name, $info));
     }
 
     private function registerItems(): void {
