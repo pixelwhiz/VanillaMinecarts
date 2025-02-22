@@ -5,6 +5,8 @@ namespace pixelwhiz\vanillaminecarts\entities\minecarts;
 use pixelwhiz\vanillaminecarts\entities\MinecartBase;
 use pixelwhiz\vanillaminecarts\VanillaMinecarts;
 use pocketmine\block\ActivatorRail;
+use pocketmine\block\BlockTypeIds;
+use pocketmine\block\PoweredRail;
 use pocketmine\entity\Living;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkBroadcastUtils;

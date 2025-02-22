@@ -14,6 +14,8 @@ use pixelwhiz\vanillaminecarts\utils\RailTypes;
 use pocketmine\block\Block;
 use pocketmine\block\BlockTypeIds;
 use pocketmine\block\DetectorRail;
+use pocketmine\block\PoweredRail;
+use pocketmine\block\Rail;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
@@ -104,6 +106,8 @@ class MinecartBase extends Entity {
             $rails->handle();
             $rails->onUpdate();
         }
+
+        $this->forwardOnRail($this->getHorizontalFacing());
 
         $this->timings->stopTiming();
         return parent::onUpdate($currentTick);
@@ -266,6 +270,24 @@ class MinecartBase extends Entity {
                 break;
             case RailTypes::CURVED_SOUTH_EAST:
                 switch ($candidateDirection) {
+                    case Facing::SOUTH:
+                        $diff = $this->location->x - $this->getLocation()->getFloorX();
+                        if ($diff !== 0 and $diff >= .5) {
+                            $dx = ($this->getLocation()->getFloorX() + 1.25) - $this->location->x;
+                            $this->move($dx, 0, 0);
+                            $this->location->yaw = 270;
+                            return Facing::EAST;
+                        }
+                        break;
+                    case Facing::WEST:
+                        $diff = $this->location->z - $this->getLocation()->getFloorZ();
+                        if ($diff !== 0 and $diff <= .5) {
+                            $dz = $dz = ($this->getLocation()->getFloorZ() - .5) - $this->location->z;
+                            $this->move(0, 0, $dz);
+                            $this->location->yaw = 180;
+                            return Facing::NORTH;
+                        }
+                        break;
                     case Facing::EAST:
                         $this->location->yaw = 270;
                         return $candidateDirection;
@@ -276,6 +298,24 @@ class MinecartBase extends Entity {
                 break;
             case RailTypes::CURVED_SOUTH_WEST:
                 switch ($candidateDirection) {
+                    case Facing::SOUTH:
+                        $diff = $this->location->x - $this->getLocation()->getFloorX();
+                        if ($diff !== 0 and $diff <= .5) {
+                            $dx = ($this->getLocation()->getFloorX() - .5) - $this->location->x;
+                            $this->move($dx, 0, 0);
+                            $this->location->yaw = 90;
+                            return Facing::WEST;
+                        }
+                        break;
+                    case Facing::EAST:
+                        $diff = $this->location->z - $this->getLocation()->getFloorZ();
+                        if ($diff !== 0 and $diff <= .5) {
+                            $dz = ($this->getLocation()->getFloorZ() - .5) - $this->location->z;
+                            $this->move(0, 0, $dz);
+                            $this->location->yaw = 180;
+                            return Facing::NORTH;
+                        }
+                        break;
                     case Facing::WEST:
                         $this->location->yaw = 90;
                         return $candidateDirection;
@@ -286,6 +326,24 @@ class MinecartBase extends Entity {
                 break;
             case RailTypes::CURVED_NORTH_WEST:
                 switch ($candidateDirection) {
+                    case Facing::NORTH:
+                        $diff = $this->location->x - $this->getLocation()->getFloorX();
+                        if ($diff !== 0 and $diff <= .5) {
+                            $dx = ($this->getLocation()->getFloorX() - .5) - $this->location->x;
+                            $this->move($dx, 0, 0);
+                            $this->location->yaw = 90;
+                            return Facing::WEST;
+                        }
+                        break;
+                    case Facing::EAST:
+                        $diff = $this->location->z - $this->getLocation()->getFloorZ();
+                        if ($diff !== 0 and $diff >= .5) {
+                            $dz = ($this->getLocation()->getFloorZ() + 1.25) - $this->location->z;
+                            $this->move(0, 0, $dz);
+                            $this->location->yaw = 0;
+                            return Facing::SOUTH;
+                        }
+                        break;
                     case Facing::WEST:
                         $this->location->yaw = 90;
                         return $candidateDirection;
@@ -297,6 +355,24 @@ class MinecartBase extends Entity {
                 break;
             case RailTypes::CURVED_NORTH_EAST:
                 switch ($candidateDirection) {
+                    case Facing::NORTH:
+                        $diff = $this->location->x - $this->getLocation()->getFloorX();
+                        if ($diff !== 0 and $diff >= .5) {
+                            $dx = ($this->getLocation()->getFloorX() + 1.25) - $this->location->x;
+                            $this->move($dx, 0, 0);
+                            $this->location->yaw = 270;
+                            return Facing::EAST;
+                        }
+                        break;
+                    case Facing::WEST:
+                        $diff = $this->location->z - $this->getLocation()->getFloorZ();
+                        if ($diff !== 0 and $diff >= .5) {
+                            $dz = $dz = ($this->getLocation()->getFloorZ() + 1.25) - $this->location->z;
+                            $this->move(0, 0, $dz);
+                            $this->location->yaw = 0;
+                            return Facing::SOUTH;
+                        }
+                        break;
                     case Facing::SOUTH:
                         $this->location->yaw = 0;
                         return $candidateDirection;
@@ -321,7 +397,7 @@ class MinecartBase extends Entity {
         $nextMoveVector = $nextMoveVector->multiply($this->moveSpeed);
         $newVector = $this->getPosition()->add($nextMoveVector->x, $nextMoveVector->y, $nextMoveVector->z);
         $possibleRail = $this->getCurrentRail();
-        if (in_array($possibleRail->getTypeId(), $railBlocks)) {
+        if ($possibleRail !== null and in_array($possibleRail->getTypeId(), $railBlocks)) {
             $this->moveUsingVector($newVector);
             return true;
         }
@@ -337,6 +413,7 @@ class MinecartBase extends Entity {
     }
 
     private function checkForTurn(int $currentDirection, int $newDirection): int {
+        $rail = $this->getCurrentRail();
         switch ($currentDirection) {
             case Facing::NORTH:
                 $diff = $this->location->x - $this->getLocation()->getFloorX();
