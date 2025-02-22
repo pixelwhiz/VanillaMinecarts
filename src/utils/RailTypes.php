@@ -1,12 +1,12 @@
 <?php
 
-namespace pixelwhiz\vanillaminecarts\block\types;
+namespace pixelwhiz\vanillaminecarts\utils;
 
 
 /**
- * Check using $block->getShape() or $rail->getShape() $block or $rail must be pocketmine\block\Rail
+ * Check using $block->getShape() or $rail->getShape() $block or $rail must be pocketmine\block\RailTypes
  * after that u can check getShape() function
- * @method Rail getShape()
+ * @method RailTypes getShape()
  *
  * @var int STRAIGHT_NORTH_SOUTH
  * @var int SLOPED_ASCENDING_NORTH
@@ -22,7 +22,7 @@ namespace pixelwhiz\vanillaminecarts\block\types;
  */
 
 
-class RailShapeTypes {
+class RailTypes {
 
     public const STRAIGHT_NORTH_SOUTH = 0;
     public const SLOPED_ASCENDING_NORTH = 4;
