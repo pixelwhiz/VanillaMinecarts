@@ -5,8 +5,6 @@ namespace pixelwhiz\vanillaminecarts\entities\minecarts;
 use pixelwhiz\vanillaminecarts\entities\MinecartBase;
 use pixelwhiz\vanillaminecarts\VanillaMinecarts;
 use pocketmine\block\ActivatorRail;
-use pocketmine\block\BlockTypeIds;
-use pocketmine\block\PoweredRail;
 use pocketmine\entity\Living;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkBroadcastUtils;
@@ -68,6 +66,7 @@ class Minecart extends MinecartBase {
         $pk->link = new EntityLink($this->getId(), $entity->getId(), EntityLink::TYPE_RIDER, true, true, 1.0);
 
         $entity->getNetworkProperties()->setVector3(EntityMetadataProperties::RIDER_SEAT_POSITION, new Vector3(0, 1, 0));
+
         $entity->getNetworkProperties()->setGenericFlag(EntityMetadataFlags::RIDING, true);
         $entity->getNetworkProperties()->setGenericFlag(EntityMetadataFlags::SADDLED, true);
         $entity->getNetworkProperties()->setGenericFlag(EntityMetadataFlags::WASD_CONTROLLED, true);

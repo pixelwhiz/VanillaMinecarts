@@ -2,9 +2,9 @@
 
 namespace pixelwhiz\vanillaminecarts\entities\minecarts;
 
-use muqsit\invmenu\InvMenu;
-use muqsit\invmenu\transaction\InvMenuTransaction;
-use muqsit\invmenu\transaction\InvMenuTransactionResult;
+use libs\muqsit\invmenu\InvMenu;
+use libs\muqsit\invmenu\transaction\InvMenuTransaction;
+use libs\muqsit\invmenu\transaction\InvMenuTransactionResult;
 use pixelwhiz\vanillaminecarts\entities\MinecartBase;
 use pocketmine\block\tile\Hopper;
 use pocketmine\inventory\Inventory;
@@ -50,7 +50,6 @@ class MinecartChest extends MinecartBase {
             $chestInventory = $this->menu->getInventory();
             $hopperInventory = $blockBelow->getInventory();
             $hopperInventory->addItem(VanillaItems::MINECART());
-            print_r("oke");
         }
 
         return parent::onUpdate($currentTick);

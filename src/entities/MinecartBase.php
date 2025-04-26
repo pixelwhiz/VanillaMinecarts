@@ -267,6 +267,7 @@ class MinecartBase extends Entity {
                         $this->location->yaw = 270;
                         return $candidateDirection;
                 }
+
                 break;
             case RailTypes::CURVED_SOUTH_EAST:
                 switch ($candidateDirection) {
@@ -274,7 +275,7 @@ class MinecartBase extends Entity {
                         $diff = $this->location->x - $this->getLocation()->getFloorX();
                         if ($diff !== 0 and $diff >= .5) {
                             $dx = ($this->getLocation()->getFloorX() + 1.25) - $this->location->x;
-                            $this->move($dx, 0, 0);
+                            $this->move($dx, 0, 0.4);
                             $this->location->yaw = 270;
                             return Facing::EAST;
                         }
@@ -282,8 +283,8 @@ class MinecartBase extends Entity {
                     case Facing::WEST:
                         $diff = $this->location->z - $this->getLocation()->getFloorZ();
                         if ($diff !== 0 and $diff <= .5) {
-                            $dz = $dz = ($this->getLocation()->getFloorZ() - .5) - $this->location->z;
-                            $this->move(0, 0, $dz);
+                            $dz = ($this->getLocation()->getFloorZ() - .5) - $this->location->z;
+                            $this->move(-0.4, 0, $dz);
                             $this->location->yaw = 180;
                             return Facing::NORTH;
                         }
@@ -302,7 +303,7 @@ class MinecartBase extends Entity {
                         $diff = $this->location->x - $this->getLocation()->getFloorX();
                         if ($diff !== 0 and $diff <= .5) {
                             $dx = ($this->getLocation()->getFloorX() - .5) - $this->location->x;
-                            $this->move($dx, 0, 0);
+                            $this->move($dx, 0, 0.4);
                             $this->location->yaw = 90;
                             return Facing::WEST;
                         }
@@ -311,7 +312,7 @@ class MinecartBase extends Entity {
                         $diff = $this->location->z - $this->getLocation()->getFloorZ();
                         if ($diff !== 0 and $diff <= .5) {
                             $dz = ($this->getLocation()->getFloorZ() - .5) - $this->location->z;
-                            $this->move(0, 0, $dz);
+                            $this->move(0.4, 0, $dz);
                             $this->location->yaw = 180;
                             return Facing::NORTH;
                         }
@@ -330,7 +331,7 @@ class MinecartBase extends Entity {
                         $diff = $this->location->x - $this->getLocation()->getFloorX();
                         if ($diff !== 0 and $diff <= .5) {
                             $dx = ($this->getLocation()->getFloorX() - .5) - $this->location->x;
-                            $this->move($dx, 0, 0);
+                            $this->move($dx, 0, -0.4);
                             $this->location->yaw = 90;
                             return Facing::WEST;
                         }
@@ -339,7 +340,7 @@ class MinecartBase extends Entity {
                         $diff = $this->location->z - $this->getLocation()->getFloorZ();
                         if ($diff !== 0 and $diff >= .5) {
                             $dz = ($this->getLocation()->getFloorZ() + 1.25) - $this->location->z;
-                            $this->move(0, 0, $dz);
+                            $this->move(0.4, 0, $dz);
                             $this->location->yaw = 0;
                             return Facing::SOUTH;
                         }
@@ -359,7 +360,7 @@ class MinecartBase extends Entity {
                         $diff = $this->location->x - $this->getLocation()->getFloorX();
                         if ($diff !== 0 and $diff >= .5) {
                             $dx = ($this->getLocation()->getFloorX() + 1.25) - $this->location->x;
-                            $this->move($dx, 0, 0);
+                            $this->move($dx, 0, -0.4);
                             $this->location->yaw = 270;
                             return Facing::EAST;
                         }
@@ -367,8 +368,8 @@ class MinecartBase extends Entity {
                     case Facing::WEST:
                         $diff = $this->location->z - $this->getLocation()->getFloorZ();
                         if ($diff !== 0 and $diff >= .5) {
-                            $dz = $dz = ($this->getLocation()->getFloorZ() + 1.25) - $this->location->z;
-                            $this->move(0, 0, $dz);
+                            $dz = ($this->getLocation()->getFloorZ() + 1.25) - $this->location->z;
+                            $this->move(-0.4, 0, $dz);
                             $this->location->yaw = 0;
                             return Facing::SOUTH;
                         }
