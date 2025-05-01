@@ -23,8 +23,8 @@ This plugin requires the following dependencies:
 ## Features <a name="features"></a>
 
 - [x] **Minecart** - Player can sit but sit position isn't persistance
-- [ ] **Minecart with Chest** - Can open inventory but doesn't work with Hopper
-- [ ] **Minecart with Hopper** - Can open inventory but doesn't work with Chest
+- [x] **Minecart with Chest** - Can open inventory but doesn't work with Hopper
+- [x] **Minecart with Hopper** - Can open inventory but doesn't work with Chest
 - [x] **Minecart with TNT** - Can explode normally with fire or other causes
 - [x] **Rail** - Can run normally but speed isn't determined
 - [ ] **Powered Rail** - Not Fully implemented with Redstone
