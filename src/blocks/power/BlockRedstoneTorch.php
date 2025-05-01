@@ -10,6 +10,7 @@ use pixelwhiz\vanillaminecarts\blocks\IRedstoneComponent;
 use pixelwhiz\vanillaminecarts\blocks\LinkRedstoneWireTrait;
 use pixelwhiz\vanillaminecarts\events\BlockRedstoneUpdatePowerEvent;
 use pocketmine\block\BlockIdentifier;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\block\BlockTypeInfo;
 use pocketmine\block\RedstoneTorch;
 use pocketmine\block\VanillaBlocks;
@@ -25,7 +26,7 @@ class BlockRedstoneTorch extends RedstoneTorch implements IRedstoneComponent, IL
     {
         $oldRedstoneTorch = VanillaBlocks::REDSTONE_TORCH();
         parent::__construct(
-            new BlockIdentifier($oldRedstoneTorch->getTypeId()),
+            new BlockIdentifier(BlockTypeIds::newId()),
             $oldRedstoneTorch->getName(),
             new BlockTypeInfo($oldRedstoneTorch->getBreakInfo(), $oldRedstoneTorch->getTypeTags())
         );

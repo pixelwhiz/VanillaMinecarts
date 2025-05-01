@@ -6,6 +6,7 @@ namespace pixelwhiz\vanillaminecarts\blocks;
 use Closure;
 use pocketmine\block\Block;
 use pocketmine\block\BlockIdentifier;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\inventory\CreativeInventory;
@@ -27,6 +28,7 @@ class BlockLoader extends Loader {
         if ($class !== null) {
             $bid = new BlockIdentifier($id);
         }
+
         $block = $callback($bid, $oldBlock->getName(), $oldBlock->getBreakInfo());
 
         return new self($name, $block);

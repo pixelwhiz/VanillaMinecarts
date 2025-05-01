@@ -8,6 +8,7 @@ use pixelwhiz\vanillaminecarts\blocks\IRedstoneComponent;
 use pixelwhiz\vanillaminecarts\blocks\RedstoneComponentTrait;
 use pixelwhiz\vanillaminecarts\events\BlockRedstoneUpdatePowerEvent;
 use pocketmine\block\BlockIdentifier;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\block\BlockTypeInfo;
 use pocketmine\block\PoweredRail;
 use pocketmine\block\utils\RailConnectionInfo;
@@ -24,7 +25,7 @@ class BlockPoweredRail extends PoweredRail implements IRedstoneComponent {
     {
         $oldPoweredRail = VanillaBlocks::POWERED_RAIL();
         parent::__construct(
-            new BlockIdentifier($oldPoweredRail->getTypeId()),
+            new BlockIdentifier(BlockTypeIds::newId()),
             $oldPoweredRail->getName(),
             new BlockTypeInfo($oldPoweredRail->getBreakInfo(), $oldPoweredRail->getTypeTags())
         );

@@ -50,23 +50,35 @@ class VanillaMinecarts extends PluginBase {
 
     public array $blockLoader = [];
 
+    protected function onLoad(): void
+    {
+        $this->registerBlocks();
+        $this->registerEntities();
+        $this->registerItems();
+    }
+
     protected function onEnable(): void
     {
         self::$instance = $this;
         Server::getInstance()->getPluginManager()->registerEvents(new EventHandler(), $this);
         $this->data = new Config($this->getDataFolder() . "data.json", Config::JSON);
-        $this->registerEntities();
-        $this->registerItems();
-        $this->registerBlocks();
+        $this->load();
     }
 
     private function overrideBlock(string $name, Block $oldBlock, int $id, \Closure $callback, ?string $class = null): void {
         $this->blockLoader[] = BlockLoader::createBlock($name, $oldBlock, $id, $callback, $class);
     }
 
+    private function load(): void {
+        for ($i = 0; $i < count($this->blockLoader); $i++) {
+            $loader = $this->blockLoader[$i];
+            $loader->load();
+        }
+    }
+
     private function registerBlocks(): void {
-        $this->overrideBlock("rail", VanillaBlocks::POWERED_RAIL(), BlockTypeIds::POWERED_RAIL, fn($bid, $name, $info) =>  new BlockPoweredRail($bid, $name, $info));
-        $this->overrideBlock("redstone_torch", VanillaBlocks::REDSTONE_TORCH(), BlockTypeIds::REDSTONE_TORCH, fn($bid, $name, $info) =>  new BlockRedstoneTorch($bid, $name, $info));
+        $this->overrideBlock("rail", VanillaBlocks::POWERED_RAIL(), BlockTypeIds::newId(), fn($bid, $name, $info) => new BlockPoweredRail($bid, $name, $info));
+        $this->overrideBlock("redstone_torch", VanillaBlocks::REDSTONE_TORCH(), BlockTypeIds::newId(), fn($bid, $name, $info) => new BlockRedstoneTorch());
     }
 
     private function registerItems(): void {

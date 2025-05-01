@@ -2,9 +2,10 @@
 
 namespace pixelwhiz\vanillaminecarts\entities\minecarts;
 
-use libs\muqsit\invmenu\InvMenu;
-use libs\muqsit\invmenu\transaction\InvMenuTransaction;
-use libs\muqsit\invmenu\transaction\InvMenuTransactionResult;
+use muqsit\invmenu\InvMenu;
+use muqsit\invmenu\transaction\InvMenuTransaction;
+use muqsit\invmenu\transaction\InvMenuTransactionResult;
+
 use pixelwhiz\vanillaminecarts\entities\MinecartBase;
 use pocketmine\block\tile\Hopper;
 use pocketmine\inventory\Inventory;
@@ -18,6 +19,7 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\player\Player;
+
 use function zlib_decode;
 use function zlib_encode;
 use const ZLIB_ENCODING_GZIP;
@@ -41,20 +43,6 @@ class MinecartChest extends MinecartBase {
         self::$nbtSerializer = new BigEndianNbtSerializer();
         $this->read($nbt->getString("Data", $this->write()));
     }
-
-    public function onUpdate(int $currentTick): bool
-    {
-        $blockBelow = $this->getWorld()->getBlock($this->getPosition()->subtract(0, 1, 0));
-
-        if ($blockBelow instanceof Hopper) {
-            $chestInventory = $this->menu->getInventory();
-            $hopperInventory = $blockBelow->getInventory();
-            $hopperInventory->addItem(VanillaItems::MINECART());
-        }
-
-        return parent::onUpdate($currentTick);
-    }
-
 
     public function saveNBT(): CompoundTag
     {
