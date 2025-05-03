@@ -30,7 +30,7 @@ This plugin requires the following dependencies:
 - [ ] **Powered Rail** - Not Fully implemented with Redstone
 - [ ] **Detector Rail** - Not Fully implemented with Redstone
 - [ ] **Activator Rail** - Not Fully implemented with Redstone
-- [ ] **Others** - All of Redstone Mechanism is not fully implemented
+- [ ] **Others** - All of Redstone Mechanism are not fully implemented
 
 ## Preview <a name="preview"></a>
 
