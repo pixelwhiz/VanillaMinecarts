@@ -1,0 +1,10 @@
+--- # Poggit-CI Manifest. Open the CI at https://poggit.pmmp.io/ci/pixelwhiz/VanillaMinecarts
+build-by-default: true
+branches:
+- master
+projects:
+  VanillaMinecarts:
+    path: ""
+    lint: false
+    icon: "./assets/icon.png"
+...
